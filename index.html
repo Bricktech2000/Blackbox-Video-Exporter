@@ -24,6 +24,8 @@
     settings.background = '#222';
     settings.background2 = '#333';
     settings.color = '#f33';
+    settings.accent = '#fff';
+    settings.font = '20px arial';
 
     
     settings.fileInput = document.querySelector('.fileInput');
@@ -105,15 +107,25 @@
       var w = settings.width - p * 2;
       var h = settings.height - p * 2;
       var ctx = settings.ctx;
+      var yc = p;
 
       renderBackground();
-      thr = (2000 - data['rcCommand[3]']) / 1000;
-      yaw = data['rcCommand[2]'] / 1000;
-      pitch = data['rcCommand[0]'] / 1000;
-      roll = data['rcCommand[1]'] / 1000;
-      renderJoystick(p, p, w / 2, w / 2, yaw, thr);
-      renderJoystick(p + w / 2, p, w / 2, w / 2, roll, pitch);
-      console.log(yaw, thr);
+      var rawThr = data['rcCommand[3]'];
+      var thr = (2000 - rawThr) / 1000;
+      var yaw = data['rcCommand[2]'] / 1000;
+      var pitch = data['rcCommand[0]'] / 1000;
+      var roll = data['rcCommand[1]'] / 1000;
+      renderJoystick(p, yc, w / 2, w / 2, yaw, thr);
+      renderJoystick(p + w / 2, yc, w / 2, w / 2, roll, pitch);
+      yc += w / 2 + p * 2;
+      renderText(p, yc, 'Throttle: ' + Math.round(rawThr), settings.font);
+      yc += p * 4;
+      var vmax = (data.vbatref / 10);
+      var cells = Math.round(vmax / (data.vbatmaxcellvoltage / 10));
+      var vmin = (data.vbatmincellvoltage / 10) * cells;
+      var vcurr = (data.vbatLatest / 10);
+      console.log(vcurr, vmax, vmin, cells);
+      renderProgressBar(p, yc, w, w / 8, 'VBat', vcurr, vmin, vmax);
 
       function renderRect(x, y, w, h, r, c){
         ctx.fillStyle = c;
@@ -129,6 +141,13 @@
         //ctx.stroke();
         ctx.fill();
       }
+      function renderText(x, y, text, font){
+        ctx.font = font;
+        ctx.fillStyle = settings.accent;
+        //ctx.textBaseline = 'middle';
+        ctx.textBaseline = 'top';
+        ctx.fillText(text, x, y);
+      }
       function renderJoystick(x, y, w, h, xv, yv){
         var thumbSize = w / 16 + h / 16;
         renderRect(x, y, w, h, settings.borderRadius, settings.background2);
@@ -136,6 +155,12 @@
       }
       function renderBackground(){
         renderRect(0, 0, settings.width, settings.height, 0, settings.background);
+      }
+      function renderProgressBar(x, y, w, h, name, val, min, max){
+        var v = (val - min) / (max - min);
+        renderRect(x, y, w, h, settings.borderRadius, settings.background2);
+        renderRect(x, y, v * w, h, settings.borderRadius, settings.color);
+        if(name) renderText(x, y + h + p, name + ': ' + val, settings.font);
       }
     }
   </script>
