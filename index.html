@@ -118,14 +118,17 @@
       renderJoystick(p, yc, w / 2, w / 2, yaw, thr);
       renderJoystick(p + w / 2, yc, w / 2, w / 2, roll, pitch);
       yc += w / 2 + p * 2;
-      renderText(p, yc, 'Throttle: ' + Math.round(rawThr), settings.font);
-      yc += p * 4;
+      renderText(p, yc, 'Throttle: ' + Math.round((rawThr - 1000) / 10), settings.font);
+      yc += p * 4 + p;
       var vmax = (data.vbatref / 10);
       var cells = Math.round(vmax / (data.vbatmaxcellvoltage / 10));
       var vmin = (data.vbatmincellvoltage / 10) * cells;
       var vcurr = (data.vbatLatest / 10);
       console.log(vcurr, vmax, vmin, cells);
-      renderProgressBar(p, yc, w, w / 8, 'VBat', vcurr, vmin, vmax);
+      renderProgressBar(p, yc, w, w / 8, 'Voltage', vcurr, vmin, vmax);
+      yc += w / 8 + p * 4 + p;
+      var amps = data.amperageLatest / 100;
+      renderProgressBar(p, yc, w, w / 8, 'Amp Draw', amps, 0, 250);
 
       function renderRect(x, y, w, h, r, c){
         ctx.fillStyle = c;
