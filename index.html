@@ -4,12 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blackbox Video Exporter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
-  <input type="file" class="fileInput">
+  <input type="file" class="fileInput"><br>
+  <canvas class="canvas" style="height: 500px; border: 1px solid #000;"></canvas>
   <script>
     window.settings = {};
+    settings.height = 900;
+    settings.width = 200;
+    settings.padding = 20;
+    settings.borderRadius = 5;
+    settings.background = '#222';
+    settings.background2 = '#333';
+    settings.color = '#f33';
+
+    
     settings.fileInput = document.querySelector('.fileInput');
+    settings.canvas = document.querySelector('.canvas');
+    settings.canvas.width = settings.width;
+    settings.canvas.height = settings.height;
+    settings.ctx = settings.canvas.getContext('2d');
+  </script>
+  <script>
+    //https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.beginPath();
+      this.moveTo(x+r, y);
+      this.arcTo(x+w, y,   x+w, y+h, r);
+      this.arcTo(x+w, y+h, x,   y+h, r);
+      this.arcTo(x,   y+h, x,   y,   r);
+      this.arcTo(x,   y,   x+w, y,   r);
+      this.closePath();
+      return this;
+    }
   </script>
   <script src="CSVParser.js"></script>
   <script src="stickOverlay.js"></script>
@@ -22,25 +58,71 @@
       }
       var reader = new FileReader();
       reader.onload = function(){
-        var text = reader.result;
-        var dataHeader;
-        var obj = CSVParser.parse(text, function(obj, arr){
-          if(arr[0] == 'loopIteration'){
-            dataHeader = arr;
-            obj.data = [];
-            return;
-          }
-          if(dataHeader){
-            item = {};
-            for(var h = 0; h < dataHeader.length; h++)
-              item[dataHeader[h]] = arr[h];
-            obj.data.push(item);
-          }else obj[arr[0]] = arr[1]; //arr.slice(1);
-        });
-        //console.log(text);
-        console.log(obj);
+        var data = parse(reader.result);
+        animate(data);
+        console.log(data);
       }
-      reader.readAsBinaryString(this.files[0])
+      reader.readAsBinaryString(this.files[0]);
+    }
+    function parse(text){
+      var dataHeader;
+      var obj = CSVParser.parse(text, function(obj, arr){
+        if(arr[0] == 'loopIteration'){
+          dataHeader = arr;
+          obj.data = [];
+          return;
+        }
+        if(dataHeader){
+          item = {};
+          for(var h = 0; h < dataHeader.length; h++)
+            item[dataHeader[h]] = arr[h];
+          obj.data.push(item);
+        }else obj[arr[0]] = arr[1]; //arr.slice(1);
+      });
+      //console.log(text);
+      return obj;
+    }
+    function sleep(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function animate(data){
+      for(var d of data.data){
+        await sleep(100);
+        render({...data, ...d});
+      }
+    }
+    function render(data){
+      console.log('render');
+      var p = settings.padding;
+      var w = settings.width - p * 2;
+      var h = settings.height - p * 2;
+      var ctx = settings.ctx;
+
+      renderBackground();
+      renderJoystick(p, p, w / 2, w / 2, .5, .5);
+
+      function renderRect(x, y, w, h, r, c){
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        //ctx.stroke();
+        ctx.fill();
+      }
+      function renderCircle(x, y, r, c){
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        //ctx.stroke();
+        ctx.fill();
+      }
+      function renderJoystick(x, y, w, h, xv, yv){
+        var thumbSize = w / 16 + h / 16;
+        renderRect(x, y, w, h, settings.borderRadius, settings.background2);
+        renderCircle(x + w * xv, y + h * yv, thumbSize, settings.color);
+      }
+      function renderBackground(){
+        renderRect(0, 0, settings.width, settings.height, 0, settings.background);
+      }
     }
   </script>
 </body>
