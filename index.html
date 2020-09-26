@@ -19,8 +19,8 @@
     window.settings = {};
     settings.height = 900;
     settings.width = 200;
-    settings.padding = 20;
-    settings.borderRadius = 5;
+    settings.padding = 10;
+    settings.borderRadius = 10;
     settings.background = '#222';
     settings.background2 = '#333';
     settings.color = '#f33';
@@ -99,7 +99,13 @@
       var ctx = settings.ctx;
 
       renderBackground();
-      renderJoystick(p, p, w / 2, w / 2, .5, .5);
+      thr = (2000 - data['rcCommand[3]']) / 1000;
+      yaw = data['rcCommand[2]'] / 1000;
+      pitch = data['rcCommand[0]'] / 1000;
+      roll = data['rcCommand[1]'] / 1000;
+      renderJoystick(p, p, w / 2, w / 2, yaw, thr);
+      renderJoystick(p + w / 2, p, w / 2, w / 2, roll, pitch);
+      console.log(yaw, thr);
 
       function renderRect(x, y, w, h, r, c){
         ctx.fillStyle = c;
@@ -118,7 +124,7 @@
       function renderJoystick(x, y, w, h, xv, yv){
         var thumbSize = w / 16 + h / 16;
         renderRect(x, y, w, h, settings.borderRadius, settings.background2);
-        renderCircle(x + w * xv, y + h * yv, thumbSize, settings.color);
+        renderCircle(x + w / 2 + w * xv / 2, y + h / 2 + h * yv / 2, thumbSize, settings.color);
       }
       function renderBackground(){
         renderRect(0, 0, settings.width, settings.height, 0, settings.background);
