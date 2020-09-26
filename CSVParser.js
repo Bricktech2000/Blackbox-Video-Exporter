@@ -11,9 +11,8 @@ CSVParser = {
         });
         if(arr[i].replace) arr[i] = arr[i].replace(/^"(.*)"$/g, '$1')
       }
-      console.log(arr);
-      var ret = func(arr);
-      obj = {...obj, ...ret};
+      //console.log(arr);
+      func(obj, arr);
     }
     return obj;
   }
