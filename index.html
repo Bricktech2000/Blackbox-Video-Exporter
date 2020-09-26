@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackbox Video Exporter</title>
+</head>
+<body>
+  <input type="file" class="fileInput">
+  <script>
+    window.settings = {};
+    settings.fileInput = document.querySelector('.fileInput');
+  </script>
+  <script src="CSVParser.js"></script>
+  <script src="stickOverlay.js"></script>
+  <script src="videoConverter.js"></script>
+  <script>
+    //https://www.geeksforgeeks.org/how-to-read-a-local-text-file-using-javascript/
+    settings.fileInput.onchange = function(){
+      if(this.files.length != 1){
+        throw new Error('Please only select one file.');
+      }
+      var reader = new FileReader();
+      reader.onload = function(){
+        var text = reader.result;
+        var i = 0;
+        var obj = CSVParser.parse(text, function(arr){
+          var obj = {};
+          obj[i] = arr;
+          i++;
+          return obj;
+        });
+        //console.log(text);
+        console.log(obj);
+      }
+      reader.readAsBinaryString(this.files[0])
+    }
+  </script>
+</body>
+</html>
