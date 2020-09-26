@@ -56,11 +56,14 @@
       if(this.files.length != 1){
         throw new Error('Please only select one file.');
       }
+      console.log('Reading...');
       var reader = new FileReader();
       reader.onload = function(){
+        console.log('Parsing...');
         var data = parse(reader.result);
-        animate(data);
         console.log(data);
+        console.log('Animating...');
+        animate(data);
       }
       reader.readAsBinaryString(this.files[0]);
     }
@@ -86,13 +89,18 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function animate(data){
+      var ti = data.data[0].time;
+      var pti = performance.now();
       for(var d of data.data){
+        var tc = d.time;
+        var ptc = performance.now();
+        if(ptc - pti > (tc - ti) / 1000) continue;
         await sleep(100);
         render({...data, ...d});
       }
     }
     function render(data){
-      console.log('render');
+      console.log('Rendering...');
       var p = settings.padding;
       var w = settings.width - p * 2;
       var h = settings.height - p * 2;
