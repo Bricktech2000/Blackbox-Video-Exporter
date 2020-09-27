@@ -260,8 +260,8 @@
         renderRect(0, 0, settings.width, settings.height, 0, settings.background);
       }
       function renderProgressBar(x, y, w, h, name, val, min, max){
-        var v = Math.min(Math.max(v, min), max); //prevent out of range values
-        v = (val - min) / (max - min);
+        var v = Math.min(Math.max(val, min), max); //prevent out of range values
+        v = (v - min) / (max - min);
         renderRect(x, y, w, h, settings.borderRadius, settings.background2);
         renderRect(x, y, v * w, h, settings.borderRadius, settings.color);
         if(name) renderText(x, y + h + p, name + ': ' + val, settings.font);
