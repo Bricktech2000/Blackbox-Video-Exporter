@@ -18,7 +18,7 @@
 <body>
   <input type="radio" id="raido1" class="compileInput" name="compile" value="true">
   <label for="raido1">Compile to WEBM</label><br>
-  <input type="radio" id="radio2" class="animateInput" name="compile" value="false">
+  <input type="radio" id="radio2" class="animateInput" name="compile" value="false" checked>
   <label for="radio2">Render in real-time</label><br>
   <input type="file" class="fileInput"><br>
   <canvas class="canvas"></canvas>
@@ -254,8 +254,8 @@
         renderRect(0, 0, settings.width, settings.height, 0, settings.background);
       }
       function renderProgressBar(x, y, w, h, name, val, min, max){
-        var v = (val - min) / (max - min);
-        v = Math.min(Math.max(v, min), max); //prevent out of range values
+        var v = Math.min(Math.max(v, min), max); //prevent out of range values
+        v = (val - min) / (max - min);
         renderRect(x, y, w, h, settings.borderRadius, settings.background2);
         renderRect(x, y, v * w, h, settings.borderRadius, settings.color);
         if(name) renderText(x, y + h + p, name + ': ' + val, settings.font);
