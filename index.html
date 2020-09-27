@@ -78,20 +78,23 @@
       if(!compile) settings.log('Rendering in Real Time...');
       else settings.log('Saving Frames for Compression...');
       //https://github.com/antimatter15/whammy
-      var encoder = new Whammy.Video(settings.fps);
-      const ts = Math.floor(1024 / settings.fps);
-      var ti = data.data[0].time;
-      var pti = performance.now();
-      var ptc = performance.now();
-      for(var d = 0; d < data.data.length; d += ts){
-        var tc = data.data[d].time;
-        if(ptc - pti > (tc - ti) / 1000) continue;
-        if(!compile) ptc = performance.now();
-        else ptc += 1000 / settings.fps;
-        await sleep(100);
-        Renderer.render({...data, ...data.data[d]});
+      var encoder = new Whammy.Video(settings.fps); //f / s
+      //data.data[].time is in 100,000ths of a second
+      settings.dataDuration = (data.data[data.data.length - 1].time - data.data[0].time) * 10 / data.data.length / 1000; //item / ms
+      console.log(settings.dataDuration);
+      var previousTime = performance.now() - 1;
+      var currentFps = 1000;
+      var d = 0;
+      for(d = 0; d < data.data.length; d += settings.dataDuration * 1000 / currentFps){
+        var currentTime = performance.now();
+        var currentFps = 1000 / (currentTime - previousTime);
+        previousTime = currentTime;
+        if(compile) currentFps = settings.fps;
+        Renderer.render({...data, ...data.data[Math.round(d)]}); //smooth(data.data, d, settings.dataFrequency * settings.smooth)});
         if(compile) encoder.add(settings.ctx);
+        await sleep(0);
       }
+      console.log(d);
       if(compile){
         settings.log('Compiling to WEBM...');
         return new Promise(function(resolve){
