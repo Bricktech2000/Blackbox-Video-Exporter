@@ -24,7 +24,7 @@
   <canvas class="canvas"></canvas>
   <script>
     window.settings = {};
-    settings.fps = 60;
+    settings.fps = 30;
     settings.height = 900;
     settings.width = 200;
     settings.padding = 10;
@@ -178,10 +178,10 @@
 
       renderBackground();
       var rawThr = data['rcCommand[3]'];
-      var thr = (2000 - rawThr) / 1000;
-      var yaw = data['rcCommand[2]'] / 1000;
-      var pitch = data['rcCommand[0]'] / 1000;
-      var roll = data['rcCommand[1]'] / 1000;
+      var thr = (rawThr - 1000) / 1000 * -2 + 1;
+      var roll = data['rcCommand[0]'] / 256 / 2;
+      var pitch = data['rcCommand[1]'] / 256 / 2;
+      var yaw = data['rcCommand[2]'] / 256 / 2;
       renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, yaw, thr);
       renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, roll, pitch);
       yc += w / 2 + p * 1;
