@@ -1,5 +1,5 @@
 Parser = {
-  parse = async function(text){
+  parse: async function(text){
     settings.log('Parsing...');
     await sleep(1);
     var dataHeader;

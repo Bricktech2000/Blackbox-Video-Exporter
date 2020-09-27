@@ -23,19 +23,3 @@ function replaceBy(str, regex, func){
   if(match) return func(match);
   else return str;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
