@@ -10,13 +10,21 @@
       padding: 0;
       box-sizing: border-box;
     }
+    canvas, video{
+      height: 500px; border: 1px solid #000;
+    }
   </style>
 </head>
 <body>
+  <input type="radio" id="raido1" class="compileInput" name="compile" value="true">
+  <label for="raido1">Compile to WEBM</label><br>
+  <input type="radio" id="radio2" class="animateInput" name="compile" value="false">
+  <label for="radio2">Render in real-time</label><br>
   <input type="file" class="fileInput"><br>
-  <canvas class="canvas" style="height: 500px; border: 1px solid #000;"></canvas>
+  <canvas class="canvas"></canvas>
   <script>
     window.settings = {};
+    settings.fps = 60;
     settings.height = 900;
     settings.width = 200;
     settings.padding = 10;
@@ -33,6 +41,9 @@
     settings.canvas.width = settings.width;
     settings.canvas.height = settings.height;
     settings.ctx = settings.canvas.getContext('2d');
+    settings.compileInput = document.querySelector('.compileInput');
+    settings.animateInput = document.querySelector('.animateInput');
+    settings.compile = false;
   </script>
   <script>
     //https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
@@ -52,7 +63,14 @@
   <script src="CSVParser.js"></script>
   <script src="stickOverlay.js"></script>
   <script src="videoConverter.js"></script>
+  <script src="whammy.js"></script>
   <script>
+    settings.compileInput.onchange = settings.animateInput.onchange = function(){
+      if(this == settings.compileInput)
+        settings.compile = true;
+      if(this == settings.animateInput)
+        settings.compile = false;
+    }
     //https://www.geeksforgeeks.org/how-to-read-a-local-text-file-using-javascript/
     settings.fileInput.onchange = function(){
       if(this.files.length != 1){
@@ -60,16 +78,36 @@
       }
       console.log('Reading...');
       var reader = new FileReader();
-      reader.onload = function(){
-        console.log('Parsing...');
-        var data = parse(reader.result);
+      reader.onload = async function(){
+        try{
+          var data = parse(reader.result);
+        }catch(e){
+          console.log('Error Parsing File. See console for more details.');
+          console.log('Process Halted.');
+          throw e;
+        }
         console.log(data);
-        console.log('Animating...');
-        animate(data);
+        try{
+          await animate(data, settings.compile);
+        }catch(e){
+          console.log('Error Rendering Data. See console for more details.');
+          console.log('Process Halted.');
+          throw e;
+        }
+        console.log('Process Successful.');
       }
-      reader.readAsBinaryString(this.files[0]);
+      try{
+        reader.readAsBinaryString(this.files[0]);
+      }catch(e){
+        console.log('Error Reading File. See console for more details.');
+        console.log('Process Halted.');
+        throw e;
+      }
+      //https://stackoverflow.com/questions/3528359/html-input-type-file-file-selection-event
+      settings.fileInput.value = null;
     }
     function parse(text){
+      console.log('Parsing...');
       var dataHeader;
       var obj = CSVParser.parse(text, function(obj, arr){
         if(arr[0] == 'loopIteration'){
@@ -90,23 +128,43 @@
     function sleep(ms){
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    async function animate(data){
+    async function animate(data, compile){
+      if(!compile) console.log('Rendering in Real Time...');
+      else console.log('Saving Frames for Compression...');
+      //https://github.com/antimatter15/whammy
+      var encoder = new Whammy.Video(settings.fps);
       const ts = 100;
       var ti = data.data[0].time;
       var pti = performance.now();
+      var ptc = performance.now();
       for(var d = 0; d < data.data.length;){
         var tc = data.data[d].time;
-        var ptc = performance.now();
+        if(!compile) ptc = performance.now();
+        else ptc += 1000 / settings.fps;
         if(ptc - pti > (tc - ti) / 1000){
           d += ts;
           continue;
         }
         await sleep(100);
         render({...data, ...data.data[d]});
+        if(compile) encoder.add(settings.ctx);
+      }
+      if(compile){
+        console.log('Compiling to WEBM...');
+        encoder.compile(false, function(output){
+          var url = URL.createObjectURL(output);
+          var video = document.createElement('video');
+          var source = document.createElement('source');
+          video.controls = true;
+          source.src = url;
+          video.appendChild(source);
+          document.body.appendChild(video);
+        });
+        console.log('Done');
       }
     }
     function render(data){
-      console.log('Rendering...');
+      //console.log('Rendering...');
       const cameraAngle = 20;
       const cameraFOV = 70;
       const maxCurrent = 250;
