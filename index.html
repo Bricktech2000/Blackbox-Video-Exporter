@@ -107,6 +107,8 @@
       var w = settings.width - p * 2;
       var h = settings.height - p * 2;
       var ctx = settings.ctx;
+      var textPadding = p * 4;
+      var sectionPadding = p * 4;
       var yc = p;
 
       renderBackground();
@@ -117,18 +119,29 @@
       var roll = data['rcCommand[1]'] / 1000;
       renderJoystick(p, yc, w / 2, w / 2, yaw, thr);
       renderJoystick(p + w / 2, yc, w / 2, w / 2, roll, pitch);
-      yc += w / 2 + p * 2;
+      yc += w / 2 + p * 1;
       renderText(p, yc, 'Throttle: ' + Math.round((rawThr - 1000) / 10), settings.font);
-      yc += p * 4 + p;
+      yc += textPadding;
+      var rssi = Math.round(data.rssi / 10);
+      renderProgressBar(p, yc, w, w / 8, 'RSSI', rssi, 0, 100);
+      yc += w / 8 + textPadding + p * 1 + sectionPadding;
       var vmax = (data.vbatref / 10);
       var cells = Math.round(vmax / (data.vbatmaxcellvoltage / 10));
       var vmin = (data.vbatmincellvoltage / 10) * cells;
       var vcurr = (data.vbatLatest / 10);
-      console.log(vcurr, vmax, vmin, cells);
       renderProgressBar(p, yc, w, w / 8, 'Voltage', vcurr, vmin, vmax);
-      yc += w / 8 + p * 4 + p;
+      yc += w / 8 + textPadding + p * 1;
       var amps = data.amperageLatest / 100;
-      renderProgressBar(p, yc, w, w / 8, 'Amp Draw', amps, 0, 250);
+      renderProgressBar(p, yc, w, w / 8, 'Current', amps, 0, 250);
+      yc += w / 8 + textPadding + p * 1;
+      var watts = vcurr * amps;
+      renderProgressBar(p, yc, w, w / 8, 'Power', Math.round(watts * 100) / 100, 0, 3000);
+      yc += w / 8 + textPadding + p * 1 + sectionPadding;
+      var gyros = (Math.abs(data['gyroADC[0]']) + Math.abs(data['gyroADC[1]']) + Math.abs(data['gyroADC[2]'])) / 10;
+      renderProgressBar(p, yc, w, w / 8, 'Angular Speed', Math.round(gyros), 0, 100);
+      yc += w / 8 + textPadding + p * 1;
+      var accel = (Math.abs(data['accSmooth[0]']) + Math.abs(data['accSmooth[1]']) + Math.abs(data['accSmooth[2]'])) / 500;
+      renderProgressBar(p, yc, w, w / 8, 'Acceleration', Math.round(accel), 0, 100);
 
       function renderRect(x, y, w, h, r, c){
         ctx.fillStyle = c;
