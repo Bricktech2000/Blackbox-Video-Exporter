@@ -21,7 +21,7 @@
   <input type="radio" id="radio2" class="animateInput" name="compile" value="false" checked>
   <label for="radio2">Render in real-time</label><br>
   <input type="file" class="fileInput"><br>
-  <canvas class="canvas"></canvas>
+  <canvas class="canvas"></canvas><br>
   <script>
     window.settings = {};
     settings.fps = 30;
@@ -34,6 +34,12 @@
     settings.color = '#f33';
     settings.accent = '#fff';
     settings.font = '20px arial';
+    settings.log = function(m){
+      console.log(m);
+      var div = document.createElement('div');
+      div.innerText = m + '\n';
+      document.body.appendChild(div);
+    }
 
     
     settings.fileInput = document.querySelector('.fileInput');
@@ -72,42 +78,43 @@
         settings.compile = false;
     }
     //https://www.geeksforgeeks.org/how-to-read-a-local-text-file-using-javascript/
-    settings.fileInput.onchange = function(){
+    settings.fileInput.onchange = async function(){
       if(this.files.length != 1){
         throw new Error('Please only select one file.');
       }
-      console.log('Reading...');
+      settings.log('Reading...');
       var reader = new FileReader();
       reader.onload = async function(){
         try{
-          var data = parse(reader.result);
+          var data = await parse(reader.result);
         }catch(e){
-          console.log('Error Parsing File. See console for more details.');
-          console.log('Process Halted.');
+          settings.log('Error Parsing File. See console for more details.');
+          settings.log('Process Halted.');
           throw e;
         }
         console.log(data);
         try{
           await animate(data, settings.compile);
         }catch(e){
-          console.log('Error Rendering Data. See console for more details.');
-          console.log('Process Halted.');
+          settings.log('Error Rendering Data. See console for more details.');
+          settings.log('Process Halted.');
           throw e;
         }
-        console.log('Process Successful.');
+        settings.log('Process Successful.');
       }
       try{
         reader.readAsBinaryString(this.files[0]);
       }catch(e){
-        console.log('Error Reading File. See console for more details.');
-        console.log('Process Halted.');
+        settings.log('Error Reading File. See console for more details.');
+        settings.log('Process Halted.');
         throw e;
       }
       //https://stackoverflow.com/questions/3528359/html-input-type-file-file-selection-event
       settings.fileInput.value = null;
     }
-    function parse(text){
-      console.log('Parsing...');
+    async function parse(text){
+      settings.log('Parsing...');
+      await sleep(1);
       var dataHeader;
       var obj = CSVParser.parse(text, function(obj, arr){
         if(arr[0] == 'loopIteration'){
@@ -129,8 +136,8 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function animate(data, compile){
-      if(!compile) console.log('Rendering in Real Time...');
-      else console.log('Saving Frames for Compression...');
+      if(!compile) settings.log('Rendering in Real Time...');
+      else settings.log('Saving Frames for Compression...');
       //https://github.com/antimatter15/whammy
       var encoder = new Whammy.Video(settings.fps);
       const ts = Math.floor(1024 / settings.fps);
@@ -147,7 +154,7 @@
         if(compile) encoder.add(settings.ctx);
       }
       if(compile){
-        console.log('Compiling to WEBM...');
+        settings.log('Compiling to WEBM...');
         return new Promise(function(resolve){
           encoder.compile(false, function(output){
             var url = URL.createObjectURL(output);
@@ -163,7 +170,7 @@
       }
     }
     function render(data){
-      //console.log('Rendering...');
+      //settings.log('Rendering...');
       const cameraAngle = 20;
       const cameraFOV = 70;
       const maxCurrent = 250;
