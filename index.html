@@ -26,14 +26,16 @@
     window.settings = {};
     settings.fileInput = document.querySelector('.fileInput');
     settings.canvas = document.querySelector('.canvas');
-    settings.canvas.width = settings.width;
-    settings.canvas.height = settings.height;
     settings.ctx = settings.canvas.getContext('2d');
     settings.compileInput = document.querySelector('.compileInput');
     settings.animateInput = document.querySelector('.animateInput');
     settings.compile = false;
   </script>
   <script src="settings.js"></script>
+  <script>
+    settings.canvas.width = settings.width;
+    settings.canvas.height = settings.height;
+  </script>
   <script src="CSVParser.js"></script>
   <script src="Parser.js"></script>
   <script src="Renderer.js"></script>
@@ -54,30 +56,18 @@
       settings.log('Reading...');
       var reader = new FileReader();
       reader.onload = async function(){
-        try{
-          var data = await (Parser.parse(reader.result));
-        }catch(e){
-          settings.log('Error Parsing File. See console for more details.');
-          settings.log('Process Halted.');
-          throw e;
-        }
+        var data = await tryCatchLog(() => {
+          return Parser.parse(reader.result);
+        }, 'Error Parsing File.');
         console.log(data);
-        try{
-          await animate(data, settings.compile);
-        }catch(e){
-          settings.log('Error Rendering Data. See console for more details.');
-          settings.log('Process Halted.');
-          throw e;
-        }
+        await tryCatchLog(() => {
+          return animate(data, settings.compile);
+        }, 'Error Rendering Data.');
         settings.log('Process Successful.');
       }
-      try{
-        reader.readAsBinaryString(this.files[0]);
-      }catch(e){
-        settings.log('Error Reading File. See console for more details.');
-        settings.log('Process Halted.');
-        throw e;
-      }
+      tryCatchLog(() => {
+        return reader.readAsBinaryString(this.files[0]);
+      }, 'Error Reading File.');
       //https://stackoverflow.com/questions/3528359/html-input-type-file-file-selection-event
       settings.fileInput.value = null;
     }
@@ -116,6 +106,15 @@
             resolve();
           });
         });
+      }
+    }
+    async function tryCatchLog(func, catchMessage){
+      try{
+        return await func();
+      }catch(e){
+        settings.log(catchMessage + ' See console for more details.');
+        settings.log('Process Halted.');
+        throw e;
       }
     }
   </script>
