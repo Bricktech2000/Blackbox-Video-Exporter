@@ -133,18 +133,15 @@
       else console.log('Saving Frames for Compression...');
       //https://github.com/antimatter15/whammy
       var encoder = new Whammy.Video(settings.fps);
-      const ts = 100;
+      const ts = Math.floor(1024 / settings.fps);
       var ti = data.data[0].time;
       var pti = performance.now();
       var ptc = performance.now();
-      for(var d = 0; d < data.data.length;){
+      for(var d = 0; d < data.data.length; d += ts){
         var tc = data.data[d].time;
+        if(ptc - pti > (tc - ti) / 1000) continue;
         if(!compile) ptc = performance.now();
         else ptc += 1000 / settings.fps;
-        if(ptc - pti > (tc - ti) / 1000){
-          d += ts;
-          continue;
-        }
         await sleep(100);
         render({...data, ...data.data[d]});
         if(compile) encoder.add(settings.ctx);
