@@ -178,10 +178,10 @@
 
       renderBackground();
       var rawThr = data['rcCommand[3]'];
-      var thr = (rawThr - 1000) / 1000 * -2 + 1;
+      var thr = -(rawThr - 1000) / 1000 * 2 + 1;
       var roll = data['rcCommand[0]'] / 256 / 2;
-      var pitch = data['rcCommand[1]'] / 256 / 2;
-      var yaw = data['rcCommand[2]'] / 256 / 2;
+      var pitch = -data['rcCommand[1]'] / 256 / 2;
+      var yaw = -data['rcCommand[2]'] / 256 / 2;
       renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, yaw, thr);
       renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, roll, pitch);
       yc += w / 2 + p * 1;
