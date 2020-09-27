@@ -81,20 +81,18 @@
       var encoder = new Whammy.Video(settings.fps); //f / s
       //data.data[].time is in 100,000ths of a second
       settings.dataDuration = (data.data[data.data.length - 1].time - data.data[0].time) * 10 / data.data.length / 1000; //item / ms
-      console.log(settings.dataDuration);
       var previousTime = performance.now() - 1;
       var currentFps = 1000;
       var d = 0;
-      for(d = 0; d < data.data.length; d += settings.dataDuration * 1000 / currentFps){
+      for(d = 0; Math.round(d) < data.data.length; d += settings.dataDuration * 1000 / currentFps){
         var currentTime = performance.now();
         var currentFps = 1000 / (currentTime - previousTime);
         previousTime = currentTime;
         if(compile) currentFps = settings.fps;
-        Renderer.render({...data, ...data.data[Math.round(d)]}); //smooth(data.data, d, settings.dataFrequency * settings.smooth)});
+        Renderer.render({...data, ...movingAverage(data.data, Math.round(d), Math.round(settings.dataDuration * 1000 * settings.movingAverageDuration))});
         if(compile) encoder.add(settings.ctx);
         await sleep(0);
       }
-      console.log(d);
       if(compile){
         settings.log('Compiling to WEBM...');
         return new Promise(function(resolve){
@@ -119,6 +117,20 @@
         settings.log('Process Halted.');
         throw e;
       }
+    }
+    function movingAverage(data, index, count){
+      var dataAvg = {};
+      var lastItem = data[0];
+      for(var i = 0; i < count; i++){
+        var item = data[index + i];
+        if(item === undefined) item = lastItem;
+        else lastItem = item;
+        for(var key of Object.keys(item)){
+          if(dataAvg[key] === undefined) dataAvg[key] = 0;
+          dataAvg[key] += item[key] / count;
+        }
+      }
+      return dataAvg;
     }
   </script>
 </body>

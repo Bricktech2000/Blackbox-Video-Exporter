@@ -31,13 +31,13 @@ Renderer = {
     var cells = Math.round(vmax / (data.vbatmaxcellvoltage / 10));
     var vmin = (data.vbatmincellvoltage / 10) * cells;
     var vcurr = (data.vbatLatest / 10);
-    renderProgressBar(p, yc, w, w / 8, 'Voltage', vcurr, vmin, vmax);
+    renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(vcurr), vmin, vmax);
     yc += w / 8 + textPadding + p * 1;
     var amps = data.amperageLatest / 100;
-    renderProgressBar(p, yc, w, w / 8, 'Current', amps, 0, maxCurrent);
+    renderProgressBar(p, yc, w, w / 8, 'Current', twoDecimals(amps), 0, maxCurrent);
     yc += w / 8 + textPadding + p * 1;
     var watts = vcurr * amps;
-    renderProgressBar(p, yc, w, w / 8, 'Power', Math.round(watts * 100) / 100, 0, maxPower);
+    renderProgressBar(p, yc, w, w / 8, 'Power', twoDecimals(watts), 0, maxPower);
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
     var gyros = (Math.abs(data['gyroADC[0]']) + Math.abs(data['gyroADC[1]']) + Math.abs(data['gyroADC[2]'])) / 10;
     renderProgressBar(p, yc, w, w / 8, 'Angular Speed', Math.round(gyros), 0, 100);
@@ -110,6 +110,9 @@ Renderer = {
       var yo = Math.sin(rv / 360 * 2 * Math.PI) * hypot;
       renderLine(x + w / 2 - xo, y + h / 2 - yo - pv, x + w / 2 + xo, y + h / 2 + yo - pv, w / 32);
       ctx.restore();
+    }
+    function twoDecimals(number){
+      return Math.round(number * 100) / 100;
     }
   }
 }

@@ -1,4 +1,5 @@
 settings.fps = 30;
+settings.movingAverageDuration = .1;
 settings.height = 900;
 settings.width = 200;
 settings.padding = 10;
