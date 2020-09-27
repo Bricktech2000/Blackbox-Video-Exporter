@@ -151,16 +151,18 @@
       }
       if(compile){
         console.log('Compiling to WEBM...');
-        encoder.compile(false, function(output){
-          var url = URL.createObjectURL(output);
-          var video = document.createElement('video');
-          var source = document.createElement('source');
-          video.controls = true;
-          source.src = url;
-          video.appendChild(source);
-          document.body.appendChild(video);
+        return new Promise(function(resolve){
+          encoder.compile(false, function(output){
+            var url = URL.createObjectURL(output);
+            var video = document.createElement('video');
+            var source = document.createElement('source');
+            video.controls = true;
+            source.src = url;
+            video.appendChild(source);
+            document.body.appendChild(video);
+            resolve();
+          });
         });
-        console.log('Done');
       }
     }
     function render(data){
