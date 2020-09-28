@@ -3,7 +3,7 @@ CSVParser = {
     var obj = {};
     var lines = text.split('\n');
     //
-    for(var l = 0; l < lines.length / 10; l++){
+    for(var l = 0; l < lines.length / 1; l++){
       var arr = lines[l].split(',');
       for(var i = 0; i < arr.length; i++){
         arr[i] = replaceBy(arr[i], /^[^"]*$/g, function(num){
