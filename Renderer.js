@@ -17,20 +17,20 @@ Renderer = {
     renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, data.yaw, data.thr);
     renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, data.roll, data.pitch);
     yc += w / 2 + p * 1;
-    renderText(p, yc, 'Throttle: ' + Math.round((-data.thr + 1) * 100 / 2), settings.font);
+    renderText(p, yc, 'Throttle: ' + Math.round((-data.thr + 1) * 100 / 2) + ' ' + '%', settings.font);
     yc += textPadding;
-    renderProgressBar(p, yc, w, w / 8, 'RSSI', Math.round(data.rssi * 100), 0, 100);
+    renderProgressBar(p, yc, w, w / 8, 'RSSI', Math.round(data.rssi * 100), 0, 100, '%');
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(data.volts), data.vmin, data.vmax);
+    renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(data.volts), data.vmin, data.vmax, 'V');
     yc += w / 8 + textPadding + p * 1;
-    renderProgressBar(p, yc, w, w / 8, 'Current', twoDecimals(data.amps), 0, maxCurrent);
+    renderProgressBar(p, yc, w, w / 8, 'Current', Math.round(data.amps), 0, maxCurrent, 'A');
     yc += w / 8 + textPadding + p * 1;
-    renderProgressBar(p, yc, w, w / 8, 'Power', twoDecimals(data.volts * data.amps), 0, maxPower);
+    renderProgressBar(p, yc, w, w / 8, 'Power', Math.round(data.volts * data.amps), 0, maxPower, 'W');
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
     var gyros = (data.gyro0 + data.gyro1 + data.gyro2) / 10;
     renderProgressBar(p, yc, w, w / 8, 'Angular Speed', Math.round(gyros), 0, 100);
     yc += w / 8 + textPadding + p * 1;
-    var accel = (data.acc0 + data.acc1 + data.acc2) / 500;
+    var accel = (data.acc0 + data.acc1 + data.acc2) / 250;
     renderProgressBar(p, yc, w, w / 8, 'Acceleration', Math.round(accel), 0, 100);
     yc += w / 8 + textPadding + p * 1 + sectionPadding * 2 / 3;
     var hroll = data.head0
@@ -77,12 +77,12 @@ Renderer = {
     function renderBackground(){
       renderRect(0, 0, settings.width, settings.height, 0, settings.background);
     }
-    function renderProgressBar(x, y, w, h, name, val, min, max){
+    function renderProgressBar(x, y, w, h, name, val, min, max, unit = ''){
       var v = Math.min(Math.max(val, min), max); //prevent out of range values
       v = (v - min) / (max - min);
       renderRect(x, y, w, h, settings.borderRadius, settings.background2);
       renderRect(x, y, v * w, h, settings.borderRadius, settings.color);
-      if(name) renderText(x, y + h + p, name + ': ' + val, settings.font);
+      if(name) renderText(x, y + h + p, name + ': ' + val + ' ' + unit, settings.font);
     }
     function renderHorizon(x, y, w, h, pv, rv){
       ctx.save();
@@ -100,7 +100,8 @@ Renderer = {
       ctx.restore();
     }
     function twoDecimals(number){
-      return Math.round(number * 100) / 100;
+      //https://stackoverflow.com/questions/4435170/how-to-parse-float-with-two-decimal-places-in-javascript
+      return number.toFixed(2);
     }
   }
 }
