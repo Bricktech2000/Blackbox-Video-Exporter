@@ -14,40 +14,28 @@ Renderer = {
     var yc = p * 2;
 
     renderBackground();
-    var rawThr = data['rcCommand[3]'];
-    var thr = -(rawThr - 1000) / 1000 * 2 + 1;
-    var roll = data['rcCommand[0]'] / 256 / 2;
-    var pitch = -data['rcCommand[1]'] / 256 / 2;
-    var yaw = -data['rcCommand[2]'] / 256 / 2;
-    renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, yaw, thr);
-    renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, roll, pitch);
+    renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, data.yaw, data.thr);
+    renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, data.roll, data.pitch);
     yc += w / 2 + p * 1;
-    renderText(p, yc, 'Throttle: ' + Math.round((rawThr - 1000) / 10), settings.font);
+    renderText(p, yc, 'Throttle: ' + Math.round((-data.thr + 1) * 100 / 2), settings.font);
     yc += textPadding;
-    var rssi = Math.round(data.rssi / 10);
-    renderProgressBar(p, yc, w, w / 8, 'RSSI', rssi, 0, 100);
+    renderProgressBar(p, yc, w, w / 8, 'RSSI', Math.round(data.rssi * 100), 0, 100);
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    var vmax = (data.vbatref / 10);
-    var cells = Math.round(vmax / (data.vbatmaxcellvoltage / 10));
-    var vmin = (data.vbatmincellvoltage / 10) * cells;
-    var vcurr = (data.vbatLatest / 10);
-    renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(vcurr), vmin, vmax);
+    renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(data.volts), data.vmin, data.vmax);
     yc += w / 8 + textPadding + p * 1;
-    var amps = data.amperageLatest / 100;
-    renderProgressBar(p, yc, w, w / 8, 'Current', twoDecimals(amps), 0, maxCurrent);
+    renderProgressBar(p, yc, w, w / 8, 'Current', twoDecimals(data.amps), 0, maxCurrent);
     yc += w / 8 + textPadding + p * 1;
-    var watts = vcurr * amps;
-    renderProgressBar(p, yc, w, w / 8, 'Power', twoDecimals(watts), 0, maxPower);
+    renderProgressBar(p, yc, w, w / 8, 'Power', twoDecimals(data.volts * data.amps), 0, maxPower);
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    var gyros = (Math.abs(data['gyroADC[0]']) + Math.abs(data['gyroADC[1]']) + Math.abs(data['gyroADC[2]'])) / 10;
+    var gyros = (data.gyro0 + data.gyro1 + data.gyro2) / 10;
     renderProgressBar(p, yc, w, w / 8, 'Angular Speed', Math.round(gyros), 0, 100);
     yc += w / 8 + textPadding + p * 1;
-    var accel = (Math.abs(data['accSmooth[0]']) + Math.abs(data['accSmooth[1]']) + Math.abs(data['accSmooth[2]'])) / 500;
+    var accel = (data.acc0 + data.acc1 + data.acc2) / 500;
     renderProgressBar(p, yc, w, w / 8, 'Acceleration', Math.round(accel), 0, 100);
     yc += w / 8 + textPadding + p * 1 + sectionPadding * 2 / 3;
-    var hroll = data['heading[0]'] / 2 / Math.PI * 360;
-    var hpitch = data['heading[1]'] / 2 / Math.PI * 360;
-    var hyaw = data['heading[2]'] / 2 / Math.PI * 360;
+    var hroll = data.head0
+    var hpitch = data.head1;
+    var hyaw = data.head2;
     renderHorizon(p, yc, w, w, hpitch - cameraAngle, hroll);
 
 
