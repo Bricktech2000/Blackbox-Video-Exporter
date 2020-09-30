@@ -21,6 +21,7 @@ Renderer = {
     yc += textPadding;
     renderProgressBar(p, yc, w, w / 8, 'RSSI', Math.round(data.rssi * 100), 0, 100, '%');
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
+    //console.log(data);
     renderProgressBar(p, yc, w, w / 8, 'Voltage', twoDecimals(data.volts), data.vmin, data.vmax, 'V');
     yc += w / 8 + textPadding + p * 1;
     renderProgressBar(p, yc, w, w / 8, 'Current', Math.round(data.amps), 0, maxCurrent, 'A');
