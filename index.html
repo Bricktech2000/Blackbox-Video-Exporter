@@ -91,7 +91,7 @@
       for(var d = 0; d < data.data.length; ){
         if(!compile) tc = performance.now();
         else tc += 1000 / settings.fps;
-        Renderer.render({...data, ...data.data[d]}); //...movingAverage(data.data, d, Math.round(settings.movingAverageDuration * 1000 * data.data.length / dt))});
+        Renderer.render({...data, ...movingAverage(data.data, d, Math.round(settings.movingAverageDuration * 1000 * data.data.length / dt))});
         if(compile) encoder.add(settings.ctx);
         d = Math.round((tc - ti) / (tf - ti) * data.data.length);
         await sleep(0);
