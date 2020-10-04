@@ -13,5 +13,5 @@ settings.log = function(m){
   console.log(m);
   var div = document.createElement('div');
   div.innerText = m + '\n';
-  document.body.appendChild(div);
+  settings.logDiv.appendChild(div);
 }

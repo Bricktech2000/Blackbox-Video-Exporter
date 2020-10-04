@@ -14,15 +14,38 @@
       height: 33em;
       border: .1em solid #000;
     }
+    ul, ol{
+      margin-left: 1em;
+    }
+    li{
+      margin-bottom: .5em;
+    }
   </style>
 </head>
 <body>
-  <input type="radio" id="raido1" class="compileInput" name="compile" value="true">
-  <label for="raido1">Compile to WEBM</label><br>
-  <input type="radio" id="radio2" class="animateInput" name="compile" value="false" checked>
-  <label for="radio2">Render in real-time</label><br>
-  <input type="file" accept=".csv" class="fileInput"><br>
-  <canvas class="canvas"></canvas><br>
+  <ol>
+    <li>
+      Choose the desired operation:<br>
+      <input type="radio" id="raido1" class="compileInput" name="compile" value="true">
+      <label for="raido1">Compile to WEBM</label><br>
+      <input type="radio" id="radio2" class="animateInput" name="compile" value="false" checked>
+      <label for="radio2">Render in real time</label><br>
+    </li>
+    <li>
+      Choose a betaflight blackbox CSV file:<br>
+      <button onclick=""></button>
+      (<a download href="2_ESC_SENSOR_RPM.BFL.csv">click here</a> to download a sample file)<br>
+      <input type="file" accept=".csv,.xls" class="fileInput"><br>
+    </li>
+    <li>
+      Get the rendering started!<br>
+      <canvas class="canvas"></canvas><br>
+    </li>
+  </ol>
+  <hr>
+  <div class="log">
+    <h3>log:</h3>
+  </div>
   <script>
     window.settings = {};
     settings.fileInput = document.querySelector('.fileInput');
@@ -31,6 +54,7 @@
     settings.compileInput = document.querySelector('.compileInput');
     settings.animateInput = document.querySelector('.animateInput');
     settings.compile = false;
+    settings.logDiv = document.querySelector('.log');
   </script>
   <script src="settings.js"></script>
   <script>
@@ -51,9 +75,8 @@
     }
     //https://www.geeksforgeeks.org/how-to-read-a-local-text-file-using-javascript/
     settings.fileInput.onchange = async function(){
-      if(this.files.length != 1){
-        throw new Error('Please only select one file.');
-      }
+      if(this.files.length != 1) throw new Error('Please only select one file.');
+      setUIDisableState(true);
       settings.log('Reading...');
       var reader = new FileReader();
       reader.onload = async function(){
@@ -64,7 +87,8 @@
         await tryCatchLog(() => {
           return animate(data, settings.compile);
         }, 'Error Rendering Data.');
-        settings.log('Process Successful.');
+        setUIDisableState(false);
+        settings.log('Process Successful.\n');
       }
       tryCatchLog(() => {
         return reader.readAsBinaryString(this.files[0]);
@@ -119,6 +143,7 @@
       }catch(e){
         settings.log(catchMessage + ' See console for more details.');
         settings.log('Process Halted.');
+        setUIDisableState(false);
         throw e;
       }
     }
@@ -135,6 +160,11 @@
         }
       }
       return dataAvg;
+    }
+    function setUIDisableState(state){
+      settings.fileInput.disabled = state;
+      settings.compileInput.disabled = state;
+      settings.animateInput.disabled = state;
     }
   </script>
 </body>
