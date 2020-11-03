@@ -1,8 +1,6 @@
 Renderer = {
   render: function(data){
     //settings.log('Rendering...');
-    const cameraAngle = 20;
-    const cameraFOV = 70;
     const maxCurrent = 250;
     const maxPower = 3000;
     var p = settings.padding;
@@ -37,7 +35,7 @@ Renderer = {
     var hroll = data.head0
     var hpitch = data.head1;
     var hyaw = data.head2;
-    renderHorizon(p, yc, w, w, hpitch - cameraAngle, hroll);
+    renderHorizon(p, yc, w, w, hpitch - settings.cameraAngle, hroll);
 
 
     function renderRect(x, y, w, h, r, c){
@@ -87,7 +85,7 @@ Renderer = {
     }
     function renderHorizon(x, y, w, h, pv, rv){
       ctx.save();
-      pv = pv / cameraFOV; //from -1 to 1
+      pv = pv / settings.cameraFOV; //from -1 to 1
       pv = 2 / (1 + Math.exp(-pv * 1.25)) - 1; //bidirectionnal sigmoid
       pv = pv * h + h / 20; //pixels
       renderRect(x, y, w, h, settings.borderRadius, settings.background2);

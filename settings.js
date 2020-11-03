@@ -9,6 +9,8 @@ settings.background2 = '#333';
 settings.color = '#f33';
 settings.accent = '#fff';
 settings.font = '24px arial';
+settings.cameraAngle = 20;
+settings.cameraFOV = 70;
 settings.log = function(m){
   console.log(m);
   var div = document.createElement('div');
