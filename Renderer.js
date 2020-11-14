@@ -15,7 +15,8 @@ Renderer = {
     renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, data.yaw, data.thr);
     renderJoystick(p + w / 2 + p / 2, yc, w / 2 - p / 2, w / 2 - p / 2, data.roll, data.pitch);
     yc += w / 2 + p * 1;
-    renderText(p, yc, 'Throttle: ' + Math.round((-data.thr + 1) * 100 / 2) + ' ' + '%', settings.font);
+    renderText(p, yc, 'Throttle', settings.font);
+    renderText(p + w, yc, Math.round((-data.thr + 1) * 100 / 2) + ' ' + '%', settings.font, 'right');
     yc += textPadding;
     renderProgressBar(p, yc, w, w / 8, 'RSSI', Math.round(data.rssi * 100), 0, 100, '%');
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
@@ -52,11 +53,12 @@ Renderer = {
       //ctx.stroke();
       ctx.fill();
     }
-    function renderText(x, y, text, font){
+    function renderText(x, y, text, font, align='left', base='top'){
       ctx.font = font;
       ctx.fillStyle = settings.accent;
       //ctx.textBaseline = 'middle';
-      ctx.textBaseline = 'top';
+      ctx.textBaseline = base;
+      ctx.textAlign = align;
       ctx.fillText(text, x, y);
     }
     function renderLine(x1, y1, x2, y2, w){
@@ -81,7 +83,10 @@ Renderer = {
       v = (v - min) / (max - min);
       renderRect(x, y, w, h, settings.borderRadius, settings.background2);
       renderRect(x, y, v * w, h, settings.borderRadius, settings.color);
-      if(name) renderText(x, y + h + p, name + ': ' + val + ' ' + unit, settings.font);
+      if(name){
+        renderText(x, y + h + p, name, settings.font);
+        renderText(x + w, y + h + p, val + ' ' + unit, settings.font, 'right');
+      }
     }
     function renderHorizon(x, y, w, h, pv, rv){
       ctx.save();
