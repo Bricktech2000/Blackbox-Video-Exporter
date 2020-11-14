@@ -6,10 +6,10 @@ settings.padding = 12;
 settings.borderRadius = 12;
 settings.background = '#222';
 settings.background2 = '#333';
-settings.color = '#f33';
-settings.accent = '#fff';
+settings.color = '#fff';
+settings.accent = '#ccc';
 settings.font = '24px arial';
-settings.cameraAngle = 20;
+settings.cameraAngle = 0;
 settings.cameraFOV = 70;
 settings.log = function(m){
   console.log(m);
