@@ -14,6 +14,6 @@ settings.cameraFOV = 70;
 settings.log = function(m){
   console.log(m);
   var div = document.createElement('div');
-  div.innerText = m + '\n';
+  div.textContent = m + '\n';
   settings.logDiv.appendChild(div);
 }
