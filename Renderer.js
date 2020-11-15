@@ -27,11 +27,11 @@ Renderer = {
     yc += w / 8 + textPadding + p * 1;
     renderProgressBar(p, yc, w, w / 8, 'Power', Math.round(data.volts * data.amps), 0, maxPower, 'W');
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    var gyros = (data.gyro0 + data.gyro1 + data.gyro2) / 10;
-    renderProgressBar(p, yc, w, w / 8, 'Angular Speed', Math.round(gyros), 0, 100);
+    var gyros = Math.hypot(data.gyro0, data.gyro1, data.gyro2);
+    renderProgressBar(p, yc, w, w / 8, 'Gyro', Math.round(gyros), 0, 1500, '°/s');
     yc += w / 8 + textPadding + p * 1;
-    var accel = (data.acc0 + data.acc1 + data.acc2) / 250;
-    renderProgressBar(p, yc, w, w / 8, 'Acceleration', Math.round(accel), 0, 100);
+    var accel = Math.hypot(data.acc0, data.acc1, data.acc2);
+    renderProgressBar(p, yc, w, w / 8, 'Accel', Math.round(accel), 0, 100, 'm/s²');
     yc += w / 8 + textPadding + p * 1 + sectionPadding * 2 / 3;
     var hroll = data.head0
     var hpitch = data.head1;
