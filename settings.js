@@ -11,6 +11,7 @@ settings.accent = '#ccc';
 settings.font = '24px arial';
 settings.cameraAngle = 0;
 settings.cameraFOV = 70;
+settings.fpvAspectRatio = 4 / 3; //4:3 aspect ratio
 settings.log = function(m){
   console.log(m);
   var div = document.createElement('div');
