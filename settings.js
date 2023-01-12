@@ -14,7 +14,7 @@ settings.cameraFOV = 70;
 settings.fpvAspectRatio = 4 / 3; //4:3 aspect ratio
 settings.log = function (m) {
   console.log(m);
-  var div = document.createElement('div');
+  let div = document.createElement('div');
   div.textContent = m + '\n';
   settings.logDiv.appendChild(div);
 };

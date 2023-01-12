@@ -1,6 +1,6 @@
 Parser = {
   parse: async function (text) {
-    var headerMapBlackbox = {
+    const headerMapBlackbox = {
       time: (val) => ({ key: 'time', val: val }),
       'rcCommand[0]': (val) => ({ key: 'roll', val: val / 256 / 2 }),
       'rcCommand[1]': (val) => ({ key: 'pitch', val: val / 256 / 2 }),
@@ -19,8 +19,8 @@ Parser = {
       'heading[1]': (val) => ({ key: 'head1', val: (val / 2 / Math.PI) * 360 }),
       'heading[2]': (val) => ({ key: 'head2', val: (val / 2 / Math.PI) * 360 }),
     };
-    var headerStartBlackbox = 'loopIteration';
-    var headerMapTethered = {
+    const headerStartBlackbox = 'loopIteration';
+    const headerMapTethered = {
       timestamp: (val) => ({ key: 'time', val: val * 1000 }),
       RC0: (val) => ({ key: 'roll', val: (val - 1000) / 500 - 1 }),
       RC1: (val) => ({ key: 'pitch', val: -(val - 1000) / 500 + 1 }),
@@ -48,7 +48,7 @@ Parser = {
       kinematicsY: (val) => ({ key: 'head1', val: val }),
       kinematicsZ: (val) => ({ key: 'head2', val: val }),
     };
-    var headerStartTethered = 'timestamp';
+    const headerStartTethered = 'timestamp';
     if (text.startsWith('timestamp'))
       return await Parser._parse(text, headerMapTethered, headerStartTethered);
     else
@@ -57,15 +57,15 @@ Parser = {
   _parse: async function (text, headerMap, headerStart) {
     settings.log('Parsing...');
     await sleep(1);
-    var dataHeader;
-    var obj = CSVParser.parse(text, function (obj, arr) {
+    let dataHeader;
+    let obj = CSVParser.parse(text, function (obj, arr) {
       if (arr[0] == headerStart) {
         dataHeader = arr;
         obj.data = [];
-        var cells =
+        const cells =
           Math.round(obj.vbatref / 100 / (obj.vbatmaxcellvoltage / 100)) || 0;
-        var vmax = (obj.vbatmaxcellvoltage / 100) * cells || 5;
-        var vmin = (obj.vbatmincellvoltage / 100) * cells || 0;
+        const vmax = (obj.vbatmaxcellvoltage / 100) * cells || 5;
+        const vmin = (obj.vbatmincellvoltage / 100) * cells || 0;
         obj.vmax = vmax;
         obj.cells = cells;
         obj.vmin = vmin;
@@ -73,8 +73,8 @@ Parser = {
       }
       if (dataHeader) {
         item = {};
-        for (var h = 0; h < dataHeader.length; h++) {
-          var mapped = headerMap[dataHeader[h]];
+        for (let h = 0; h < dataHeader.length; h++) {
+          let mapped = headerMap[dataHeader[h]];
           mapped = mapped && mapped(arr[h]);
           if (mapped) item[mapped.key] = mapped.val;
         }

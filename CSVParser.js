@@ -1,12 +1,12 @@
 CSVParser = {
   parse: function (text, func) {
-    var obj = {};
-    var lines = text.split('\n');
-    for (var l = 0; l < lines.length / 1; l++) {
-      var arr = lines[l].split(',');
-      for (var i = 0; i < arr.length; i++) {
+    let obj = {};
+    const lines = text.split('\n');
+    for (let l = 0; l < lines.length / 1; l++) {
+      let arr = lines[l].split(',');
+      for (let i = 0; i < arr.length; i++) {
         arr[i] = replaceBy(arr[i], /^[^"]*$/g, function (num) {
-          var float = parseFloat(num);
+          const float = parseFloat(num);
           if (isNaN(float)) return num;
           return float;
         });

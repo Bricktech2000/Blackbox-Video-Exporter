@@ -5,13 +5,13 @@ Renderer = {
     const maxPower = 3000;
     const maxAngularSpeed = 1500;
     const maxLinearAcceleration = 100;
-    var p = settings.padding;
-    var w = settings.width - p * 2;
-    var h = settings.height - p * 2;
-    var ctx = settings.ctx;
-    var textPadding = p * 4;
-    var sectionPadding = p * (10 / 3);
-    var yc = p * 1;
+    const p = settings.padding;
+    const w = settings.width - p * 2;
+    const h = settings.height - p * 2;
+    const ctx = settings.ctx;
+    const textPadding = p * 4;
+    const sectionPadding = p * (10 / 3);
+    const yc = p * 1;
 
     renderBackground();
     renderJoystick(p, yc, w / 2 - p / 2, w / 2 - p / 2, data.yaw, data.thr);
@@ -45,8 +45,8 @@ Renderer = {
       '%'
     );
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    var xc = p * 2;
-    var width = 8;
+    const xc = p * 2;
+    const width = 8;
     renderVerticalProgressBar(
       xc,
       yc,
@@ -95,7 +95,7 @@ Renderer = {
       'V'
     );
     yc += w / 8 + textPadding + p * 1 + sectionPadding;
-    var gyros = Math.hypot(data.gyro0, data.gyro1, data.gyro2);
+    const gyros = Math.hypot(data.gyro0, data.gyro1, data.gyro2);
     renderCircularProgressBar(
       p,
       yc,
@@ -107,7 +107,7 @@ Renderer = {
       maxAngularSpeed,
       '°/s'
     );
-    var accel = Math.hypot(data.acc0, data.acc1, data.acc2);
+    const accel = Math.hypot(data.acc0, data.acc1, data.acc2);
     renderVerticalProgressBar(
       w - p * 1 - w / 8,
       yc,
@@ -121,9 +121,9 @@ Renderer = {
     );
     yc += w / 8 + textPadding + p * 1;
     yc += w / 8 + textPadding + p * 1 + (sectionPadding * 2) / 3;
-    var hroll = data.head0;
-    var hpitch = data.head1;
-    var hyaw = data.head2;
+    const hroll = data.head0;
+    const hpitch = data.head1;
+    const hyaw = data.head2;
     renderHorizon(
       p,
       yc,
@@ -173,7 +173,7 @@ Renderer = {
       ctx.stroke();
     }
     function renderJoystick(x, y, w, h, xv, yv) {
-      var thumbSize = w / 16 + h / 16;
+      const thumbSize = w / 16 + h / 16;
       renderRect(x, y, w, h, settings.borderRadius, settings.background2);
       renderCircle(
         x + w / 2 + (w * xv) / 2,
@@ -186,7 +186,7 @@ Renderer = {
       renderRect(0, 0, settings.width, settings.height, 0, settings.background);
     }
     function renderProgressBar(x, y, w, h, name, val, min, max, unit = '') {
-      var v = Math.min(Math.max(val, min), max); //prevent out of range values
+      const v = Math.min(Math.max(val, min), max); //prevent out of range values
       v = (v - min) / (max - min);
       renderLine(
         x + h / 2,
@@ -220,7 +220,7 @@ Renderer = {
       max,
       unit = ''
     ) {
-      var v = Math.min(Math.max(val, min), max); //prevent out of range values
+      const v = Math.min(Math.max(val, min), max); //prevent out of range values
       v = (v - min) / (max - min);
       renderLine(
         x + w / 2,
@@ -261,7 +261,7 @@ Renderer = {
       unit = ''
     ) {
       r -= w;
-      var v = Math.min(Math.max(val, min), max); //prevent out of range values
+      const v = Math.min(Math.max(val, min), max); //prevent out of range values
       v = (v - min) / (max - min);
       renderArc(
         x + r / 2 + w / 2,
@@ -305,9 +305,9 @@ Renderer = {
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, settings.borderRadius, settings.background2);
       ctx.clip();
-      var hypot = w / 2 - p;
-      var xo = Math.cos((rv / 360) * 2 * Math.PI) * hypot;
-      var yo = Math.sin((rv / 360) * 2 * Math.PI) * hypot;
+      const hypot = w / 2 - p;
+      const xo = Math.cos((rv / 360) * 2 * Math.PI) * hypot;
+      const yo = Math.sin((rv / 360) * 2 * Math.PI) * hypot;
       renderLine(
         x + w / 2 - xo,
         y + h / 2 - yo - pv,
