@@ -1,6 +1,6 @@
 # Blackbox Video Exporter
 
-A program that turns a [Betaflight](betaflight) blackbox file into a video file
+_A program that turns Betaflight blackbox files into video overlays_
 
 ## Requirements
 
